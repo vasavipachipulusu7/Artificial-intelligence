@@ -1,0 +1,37 @@
+from collections import deque
+
+def valid(m,c,M,C):
+    return 0<=m<=M and 0<=c<=C and (m==0 or m>=c) and (M-m==0 or M-m>=C-c)
+
+def bfs(M,C):
+    q=deque([((M,C,1),[])])
+    visited=set()
+    ms=[f"m{i+1}" for i in range(M)]
+    cs=[f"c{i+1}" for i in range(C)]
+    moves=[(1,0),(2,0),(0,1),(0,2),(1,1)]
+    while q:
+        (m,c,b),path=q.popleft()
+        if (m,c,b) in visited: continue
+        visited.add((m,c,b))
+        if (m,c,b)==(0,0,0):
+            for i,(st,(dm,dc)) in enumerate(path):
+                side='left' if st[2]==1 else 'right'
+                prev_b = 1 - st[2]
+                if prev_b == 1:
+                    moved_m=ms[st[0]:st[0]+dm]
+                    moved_c=cs[st[1]:st[1]+dc]
+                else:
+                    moved_m=ms[M-st[0]-dm:M-st[0]]
+                    moved_c=cs[C-st[1]-dc:C-st[1]]
+                moved = moved_m + moved_c
+                print(f"Step {i+1}: {', '.join(moved)} -> {side}")
+                print(f"L: M={st[0]} C={st[1]} | R: M={M - st[0]} C={C - st[1]} | Boat: {side}")
+            print("Done!")
+            return
+        for dm,dc in moves:
+            nm,nc,nb=(m-dm,c-dc,0) if b==1 else (m+dm,c+dc,1)
+            if valid(nm,nc,M,C): q.append(((nm,nc,nb),path+[((nm,nc,nb),(dm,dc))]))
+
+M=int(input("Missionaries: "))
+C=int(input("Cannibals: "))
+bfs(M,C)
