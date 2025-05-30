@@ -1,0 +1,30 @@
+from itertools import permutations
+
+def solve_cryptarithm(w1, w2, w3):
+    letters = set(w1 + w2 + w3)
+    if len(letters) > 10:
+        print("Too many unique letters (>10), no solution.")
+        return
+
+    letters = list(letters)
+    for perm in permutations('0123456789', len(letters)):
+        table = dict(zip(letters, perm))
+        # Skip if any word starts with '0'
+        if table[w1[0]] == '0' or table[w2[0]] == '0' or table[w3[0]] == '0':
+            continue
+        n1 = int(''.join(table[ch] for ch in w1))
+        n2 = int(''.join(table[ch] for ch in w2))
+        n3 = int(''.join(table[ch] for ch in w3))
+        if n1 + n2 == n3:
+            print(f"Solution: {w1} + {w2} = {w3}")
+            for ch in letters:
+                print(f"{ch} = {table[ch]}")
+            print(f"{n1} + {n2} = {n3}")
+            return
+    print("No solution found.")
+
+# Example usage
+w1 = input("Enter first word: ").upper()
+w2 = input("Enter second word: ").upper()
+w3 = input("Enter result word: ").upper()
+solve_cryptarithm(w1, w2, w3)
