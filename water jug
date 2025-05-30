@@ -1,0 +1,42 @@
+from collections import deque
+
+def is_goal(state, target):
+    return target in state
+
+def successors(a, b, A, B):
+    return set([
+        (0, b), (a, 0), (A, b), (a, B),
+        (a - min(a, B - b), b + min(a, B - b)),
+        (a + min(b, A - a), b - min(b, A - a))
+    ])
+
+def bfs(A, B, target):
+    start = (0, 0)
+    q = deque([(start, [])])
+    visited = set()
+
+    while q:
+        (a, b), path = q.popleft()
+        if (a, b) in visited: continue
+        visited.add((a, b))
+        path = path + [(a, b)]
+        if is_goal((a, b), target):
+            for step in path:
+                print(f"Jug1: {step[0]}L, Jug2: {step[1]}L")
+            print("\nFinal Output:")
+            if a == target:
+                print(f"Target {target}L is in Jug1")
+            elif b == target:
+                print(f"Target {target}L is in Jug2")
+            else:
+                print(f"Combination contains {target}L")
+            return
+        for s in successors(a, b, A, B):
+            q.append((s, path))
+    print("No solution found.")
+
+# User input
+A = int(input("Enter capacity of Jug1: "))
+B = int(input("Enter capacity of Jug2: "))
+T = int(input("Enter target amount: "))
+bfs(A, B, T)
