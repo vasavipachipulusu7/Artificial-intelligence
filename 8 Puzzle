@@ -1,0 +1,37 @@
+import heapq
+
+goal = '123456780'  # 0 is the blank
+
+def manhattan(s):
+    return sum(abs((int(c)-1)//3 - i//3) + abs((int(c)-1)%3 - i%3)
+               for i, c in enumerate(s) if c != '0')
+
+def neighbors(state):
+    i = state.index('0')
+    moves = []
+    for d in [-1, 1, -3, 3]:
+        j = i + d
+        if 0 <= j < 9 and not (i % 3 == 2 and d == 1) and not (i % 3 == 0 and d == -1):
+            lst = list(state)
+            lst[i], lst[j] = lst[j], lst[i]
+            moves.append(''.join(lst))
+    return moves
+
+def solve(start):
+    heap = [(manhattan(start), 0, start, [])]
+    seen = set()
+    while heap:
+        f, g, state, path = heapq.heappop(heap)
+        if state in seen: continue
+        seen.add(state)
+        if state == goal:
+            return path + [state]
+        for n in neighbors(state):
+            heapq.heappush(heap, (g + 1 + manhattan(n), g + 1, n, path + [state]))
+
+# Example usage
+start = '123406758'  # input as a single string
+solution = solve(start)
+for step in solution:
+    print('\n'.join([step[i:i+3] for i in range(0, 9, 3)]))
+    print('---')
